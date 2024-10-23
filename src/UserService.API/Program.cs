@@ -19,6 +19,7 @@ builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureCors(builder.Configuration);
 
 // Configure Swagger to include Bearer token input
 builder.Services.AddSwaggerGen(c =>
@@ -59,6 +60,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseCors("CorsPolicy");
 
 app.MapDefaultEndpoints();
 

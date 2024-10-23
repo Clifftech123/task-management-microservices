@@ -1,5 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 
@@ -21,7 +19,7 @@ var projectserviceApi = builder.AddProject<Projects.ProjectService_API>("project
      .WithReference(projectServiceDb)
      .WithReference(rabbitMq)
      .WithReference(redis);
-      
+
 var taskServiceApi = builder.AddProject<Projects.TaskService_API>("taskservice-api")
     .WithReference(taskServiceDb)
     .WithReference(rabbitMq)
@@ -30,7 +28,7 @@ var taskServiceApi = builder.AddProject<Projects.TaskService_API>("taskservice-a
 var userServiceApi = builder.AddProject<Projects.UserService_API>("userservice-api")
      .WithReference(userSereviceDb)
      .WithReference(rabbitMq);
-     
+
 
 
 // // Reverse proxies

@@ -21,6 +21,17 @@ namespace UserService.API.Extensions
             });
         }
 
+
+
+        public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddCors(options => options.AddPolicy("CorsPolicy", policy => policy
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()));
+        }
+
+
         public static void ConfigureIdentity(this IServiceCollection services)
         {
             services.AddIdentityCore<IdentityUser>(o =>
