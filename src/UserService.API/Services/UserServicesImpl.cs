@@ -2,17 +2,18 @@
 using Microsoft.AspNetCore.Identity;
 using UserService.API.Domain.Contracts;
 using UserService.API.Domain.Entities;
+using UserService.API.Infrastructure.Exceptions;
 
 namespace UserService.API.Services
 {
-    public class UserService : IUserService
+    public class UserServiceImple : IUserService
     {
         private readonly ITokenService _tokenService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
 
-        public UserService(ITokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper,ICurrentUserService currentUserService)
+        public UserServiceImple(ITokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, ICurrentUserService currentUserService)
         {
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -37,7 +38,7 @@ namespace UserService.API.Services
             var existingUser = await _userManager.FindByEmailAsync(registerRequest.Email);
             if (existingUser != null)
             {
-                throw new ArgumentException("User already exists with this email.");
+                throw new UserAlreadyExistsException("User already exists.");
             }
 
             // Set up default profile picture
@@ -72,11 +73,16 @@ namespace UserService.API.Services
             }
 
             var user = await _userManager.FindByEmailAsync(loginRequest.Email);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
+            if (user == null)
+            {
+                throw new UserNotFoundException("User not found.");
+            }
+
+            else if (user == null || !await _userManager.CheckPasswordAsync(user, loginRequest.Password))
             {
                 throw new ArgumentException("Invalid email or password.");
             }
-
+          
             var token = await _tokenService.GenerateJwtToken(user);
             var userResponse = _mapper.Map<ApplicationUser, UserResponse>(user);
             userResponse.Token = token;
@@ -90,7 +96,7 @@ namespace UserService.API.Services
             var user = await _userManager.FindByIdAsync(currentUserId);
             if (user == null)
             {
-                throw new InvalidOperationException("User not found.");
+                throw new UserNotFoundException("User not found.");
             }
 
             var token = await _tokenService.GenerateJwtToken(user);
@@ -105,7 +111,7 @@ namespace UserService.API.Services
             var user = await _userManager.FindByIdAsync(currentUserId);
             if (user == null)
             {
-                throw new KeyNotFoundException("User not found.");
+                throw new UserNotFoundException("User not found.");
             }
 
             _mapper.Map(updateRequest, user);

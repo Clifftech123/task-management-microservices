@@ -9,17 +9,8 @@ namespace UserService.API.Extensions
 {
     public static partial class AddApplicationService
     {
-        public static void AddDatabaseConfig(this IHostApplicationBuilder builder)
-        {
-
-            builder.AddNpgsqlDbContext<ApplicationDbContext>("catalogdb", configureDbContextOptions: dbContextOptionsBuilder =>
-            {
-                dbContextOptionsBuilder.UseNpgsql(builder =>
-                {
-                    builder.UseVector();
-                });
-            });
-        }
+      
+        
 
 
 
