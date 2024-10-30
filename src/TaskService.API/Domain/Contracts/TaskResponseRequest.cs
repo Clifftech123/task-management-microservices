@@ -1,7 +1,8 @@
-﻿namespace TaskService.API.Domain.Entities
+﻿namespace TaskService.API.Domain.Contracts
 {
-    public class TaskEntities
+    public class TaskResponseRequest
     {
+
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
@@ -14,7 +15,6 @@
         public int ProjectId { get; set; }
         // Foreign key for ApplicationUser (User ID)
         public string UserId { get; set; }
-
 
     }
 }

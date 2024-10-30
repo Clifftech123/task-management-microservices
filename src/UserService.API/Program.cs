@@ -11,6 +11,8 @@ using UserService.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 
+builder.AddSeqEndpoint("seq");
+
 builder.AddServiceDefaults();
 
 builder.Services.AddControllers();
@@ -44,6 +46,9 @@ builder.Services.AddExceptionHandler<UserNotFoundExceptionHandler>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddProblemDetails();
+
+
+
 
 // Configure Swagger to include Bearer token input
 builder.Services.AddSwaggerGen(c =>

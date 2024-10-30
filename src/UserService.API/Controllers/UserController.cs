@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UserService.API.Domain.Contracts;
 using UserService.API.Services;
 
 namespace UserService.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -52,6 +53,7 @@ namespace UserService.API.Controllers
         /// </summary>
         /// <returns>An <see cref="IActionResult"/> containing the current user response.</returns>
         [HttpGet("user")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CurrentUserResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetCurrentUserAsync()
@@ -66,6 +68,7 @@ namespace UserService.API.Controllers
         /// <param name="updateCurrentUserRequest">The update request.</param>
         /// <returns>An <see cref="IActionResult"/> containing the user response.</returns>
         [HttpPut("user/update")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> UpdateCurrentUserAsync([FromBody] UpdateUserRequest updateCurrentUserRequest)

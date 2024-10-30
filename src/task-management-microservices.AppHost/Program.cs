@@ -1,28 +1,29 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
 
+var seq = builder.AddSeq("seq");
+
 
 var redis = builder.AddRedis("redis");
 var rabbitMq = builder.AddRabbitMQ("eventbus");
-var postgres = builder.AddPostgres("postgres");
-
-
-
 
 // services
 var projectserviceApi = builder.AddProject<Projects.ProjectService_API>("projectservice-api")
 
      .WithReference(rabbitMq)
-     .WithReference(redis);
+     .WithReference(redis)
+     .WithReference(seq);
 
 var taskServiceApi = builder.AddProject<Projects.TaskService_API>("taskservice-api")
-  
+
     .WithReference(rabbitMq)
-    .WithReference(redis);
+    .WithReference(redis)
+    .WithReference(seq);
 
 var userServiceApi = builder.AddProject<Projects.UserService_API>("userservice-api")
-     
-     .WithReference(rabbitMq);
+
+     .WithReference(rabbitMq)
+     .WithReference(redis);
 
 
 

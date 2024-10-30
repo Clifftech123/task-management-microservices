@@ -11,6 +11,10 @@
    
     
    
+    <PackageReference Include="Aspire.Seq" Version="8.2.2" />
+   
+    
+   
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
@@ -20,6 +24,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Pgvector.EntityFrameworkCore" Version="0.2.1" />
+       <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+
     
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>

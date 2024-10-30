@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using UserService.API.Infrastructure.Context;
@@ -9,9 +8,6 @@ namespace UserService.API.Extensions
 {
     public static partial class AddApplicationService
     {
-      
-        
-
 
 
         public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
@@ -34,6 +30,7 @@ namespace UserService.API.Extensions
                 o.Password.RequiredLength = 8;
             }).AddEntityFrameworkStores<ApplicationDbContext>()
               .AddDefaultTokenProviders();
+
         }
 
         public static void ConfigureJWT(this IServiceCollection services, IConfiguration configuration)
