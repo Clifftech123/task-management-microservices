@@ -23,7 +23,8 @@
         /// </summary>
         public string? Role { get; set; }
 
-
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
         /// <summary>
         /// Gets or sets the token.
         /// </summary>
@@ -142,5 +143,14 @@
         /// Gets or sets the profile picture.
         /// </summary>
         public string? ProfilePicture { get; set; }
+
+
+
     }
+
+
+
+
+
+
 }

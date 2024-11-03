@@ -5,13 +5,13 @@ using TaskService.API.Infrastructure.Context;
 
 namespace TaskService.API.Services
 {
-    public class TaskService : ITaskServices
+    public class TaskServiceImpl : ITaskService
     {
         private readonly ICurrentUserService _currentUserService;
-        private readonly ILogger<TaskService> _logger;
+        private readonly ILogger<TaskServiceImpl> _logger;
         public readonly TaskDbContext Context;
 
-        public TaskService(ICurrentUserService currentUserService, ILogger<TaskService> logger, TaskDbContext context)
+        public TaskServiceImpl(ICurrentUserService currentUserService, ILogger<TaskServiceImpl> logger, TaskDbContext context)
         {
             _currentUserService = currentUserService;
             _logger = logger;
@@ -55,16 +55,19 @@ namespace TaskService.API.Services
 
         public async Task<IEnumerable<TaskEntities>> GetTasksAsync()
         {
+            _logger.LogInformation("Getting all tasks");
             var taskList = await Context.Tasks.ToArrayAsync();
             if (taskList == null || taskList.Length == 0)
             {
-                return Enumerable.Empty<TaskEntities>();
+                throw new Exception("No tasks found");
+
             }
             return taskList;
         }
 
         public async Task<TaskEntities> GetTaskAsync(int taskId)
         {
+            _logger.LogInformation("Getting task by id");
             var task = await Context.Tasks.FirstOrDefaultAsync(x => x.Id == taskId);
             if (task == null)
             {
@@ -75,6 +78,7 @@ namespace TaskService.API.Services
 
         public async Task<TaskResponseRequest> UpdateTaskAsync(TaskResponseRequest taskRequest)
         {
+            _logger.LogInformation("Updating task");
             var task = await Context.Tasks.FirstOrDefaultAsync(x => x.Id == taskRequest.Id);
             if (task == null)
             {
@@ -94,6 +98,7 @@ namespace TaskService.API.Services
 
         public async Task<TaskResponseRequest> DeleteTaskAsync(int taskId)
         {
+            _logger.LogInformation("Deleting task");
             var task = await Context.Tasks.FirstOrDefaultAsync(x => x.Id == taskId);
             if (task == null)
             {

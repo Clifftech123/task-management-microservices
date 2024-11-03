@@ -16,6 +16,10 @@ namespace TaskService.API.Services
         public string GetUserId()
         {
             var GetUserId = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (GetUserId == null)
+            {
+                throw new UnauthorizedAccessException("User is not authenticated");
+            }
             _logger.LogInformation($"Current user id: {GetUserId}");
             return GetUserId;
         }

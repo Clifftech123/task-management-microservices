@@ -21,11 +21,28 @@ namespace ProjectService.API.Services
 
         public async Task<TagesDtos.CreateTagRequest> CreateTagAsync(TagesDtos.CreateTagRequest createTagRequest)
         {
-            var creatTag = _mapper.Map<Tags>(createTagRequest);
-            await _projectDbContext.Tags.AddAsync(creatTag);
-            await _projectDbContext.SaveChangesAsync();
-            return createTagRequest;
+            try
+            {
+                _logger.LogInformation("Creating a new tag");
+                var creatTag = _mapper.Map<Tags>(createTagRequest);
+                _logger.LogInformation("Adding tag to database");
+                await _projectDbContext.Tags.AddAsync(creatTag);
+                _logger.LogInformation("Saving changes to database");
+                await _projectDbContext.SaveChangesAsync();
+                return createTagRequest;
+            }
+            catch (DbUpdateException ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating the database");
+                throw new InvalidOperationException("An error occurred while updating the database", ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred");
+                throw new InvalidOperationException("An unexpected error occurred", ex);
+            }
         }
+
 
         public async Task<TagesDtos.TagResponse> GetTagByIdAsync(int id)
         {

@@ -30,9 +30,12 @@ namespace UserService.API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Role = table.Column<int>(type: "int", maxLength: 50, nullable: false),
                     ProfilePicture = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -161,8 +164,8 @@ namespace UserService.API.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "Role", "SecurityStamp", "Token", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "f3a8ec7c-ab34-4c89-a71b-fcbf9283f8e1", 0, "ee58cc75-e6fa-416b-b0b3-17f9a0fd4864", "seeduser@example.com", false, false, null, null, null, null, null, false, "https://randomuser.me/api/portraits/men/1.jpg", "Backend developer", "bd412b74-0140-42c9-8e2f-9751a2087685", null, false, "clifford" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "ProfilePicture", "RefreshToken", "RefreshTokenExpiryTime", "Role", "SecurityStamp", "TwoFactorEnabled", "UpdatedAt", "UserName" },
+                values: new object[] { "f3a8ec7c-ab34-4c89-a71b-fcbf9283f8e1", 0, "74150f6b-5076-4b6a-aeee-c0c670143386", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "seeduser@example.com", false, false, null, null, null, null, null, false, "https://randomuser.me/api/portraits/men/1.jpg", null, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, "45084ef7-1ee2-404f-acef-3efa44446383", false, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "clifford" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

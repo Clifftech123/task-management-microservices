@@ -8,7 +8,7 @@ namespace ProjectService.API.Services
         Task<IEnumerable<ProjectResponse>> GetProjectsAsync();
         Task<ProjectResponse> GetProjectByIdAsync(int id);
         Task<Project> CreateProjectAsync(CreateProjectRequest createProjectRequest);
-        Task<UpdateProjectRequest> UpdateProjectAsync(UpdateProjectRequest updateProjectRequest);
+        Task<Project> UpdateProjectAsync(int id, UpdateProjectRequest updateProjectRequest);
         Task<ProjectResponse> DeleteProjectAsync(int id);
     }
 }

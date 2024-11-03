@@ -11,6 +11,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
             .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture))
+             .ForMember(dest => dest.AccessToken, opt => opt.MapFrom(src => src.RefreshToken))
+             .ForMember(dest => dest.RefreshToken, opt => opt.MapFrom(src => src.RefreshToken))
+
             .ReverseMap();
 
         CreateMap<ApplicationUser, CurrentUserResponse>()

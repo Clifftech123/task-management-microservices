@@ -5,72 +5,114 @@ using static ProjectService.API.Domain.Contracts.TagesDtos;
 namespace ProjectService.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/projects")]
     public class TagsController : ControllerBase
     {
         private readonly ITagsServices _tagService;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TagsController"/> class.
-        /// </summary>
-        /// <param name="tagService">The tag services.</param>
         public TagsController(ITagsServices tagService)
         {
             _tagService = tagService;
         }
 
-        /// <summary>
-        /// Gets the list of tags.
-        /// </summary>
-        /// <returns>A list of <see cref="TagResponse"/>.</returns>
-        [HttpGet]
-        public async Task<IEnumerable<TagResponse>> GetTagsAsync()
+        [HttpGet("tags")]
+        public async Task<IActionResult> GetTagsAsync()
         {
-            return await _tagService.GetTagsAsync();
+            try
+            {
+                var response = await _tagService.GetTagsAsync();
+                if (response == null || !response.Any())
+                {
+                    return NotFound(new { message = "No tags found" });
+                }
+                return Ok(new { message = "Tags   successfully feted  ", response });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching tags", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Gets the tag by identifier.
-        /// </summary>
-        /// <param name="id">The tag identifier.</param>
-        /// <returns>A <see cref="TagResponse"/>.</returns>
-        [HttpGet("{id}")]
-        public async Task<TagResponse> GetTagByIdAsync(int id)
+        [HttpGet("tags/{id}")]
+        public async Task<IActionResult> GetTagByIdAsync(int id)
         {
-            return await _tagService.GetTagByIdAsync(id);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var response = await _tagService.GetTagByIdAsync(id);
+                if (response == null)
+                {
+                    return NotFound(new { message = "Tag not found" });
+                }
+                return Ok(new { message = "Tags   successfully feted  ", response });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching the tag", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Creates a new tag.
-        /// </summary>
-        /// <param name="createTagRequest">The create tag request.</param>
-        /// <returns>The created <see cref="CreateTagRequest"/>.</returns>
-        [HttpPost]
-        public async Task<CreateTagRequest> CreateTagAsync(CreateTagRequest createTagRequest)
+        [HttpPost("tags")]
+        public async Task<IActionResult> CreateTagAsync(CreateTagRequest createTagRequest)
         {
-            return await _tagService.CreateTagAsync(createTagRequest);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var response = await _tagService.CreateTagAsync(createTagRequest);
+                return Ok(new { message = "Tag created successfully", response });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the tag", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Updates an existing tag.
-        /// </summary>
-        /// <param name="updateTagRequest">The update tag request.</param>
-        /// <returns>The updated <see cref="UpdateTagRequest"/>.</returns>
-        [HttpPut]
-        public async Task<UpdateTagRequest> UpdateTagAsync(UpdateTagRequest updateTagRequest)
+        [HttpPut("tags/{id}")]
+        public async Task<IActionResult> UpdateTagAsync(int id, UpdateTagRequest updateTagRequest)
         {
-            return await _tagService.UpdateTagAsync(updateTagRequest);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var existingTag = await _tagService.GetTagByIdAsync(id);
+                if (existingTag == null)
+                {
+                    return NotFound(new { message = "Tag not found" });
+                }
+                await _tagService.UpdateTagAsync(updateTagRequest);
+                return Ok(new { message = "Tag updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the tag", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Deletes the tag by identifier.
-        /// </summary>
-        /// <param name="id">The tag identifier.</param>
-        /// <returns>A <see cref="TagResponse"/>.</returns>
-        [HttpDelete("{id}")]
-        public async Task<TagResponse> DeleteTagAsync(int id)
+        [HttpDelete("tags/{id}")]
+        public async Task<IActionResult> DeleteTagAsync(int id)
         {
-            return await _tagService.DeleteTagAsync(id);
+            try
+            {
+                var existingTag = await _tagService.GetTagByIdAsync(id);
+                if (existingTag == null)
+                {
+                    return NotFound(new { message = "Tag not found" });
+                }
+                await _tagService.DeleteTagAsync(id);
+                return Ok(new { message = "Tag deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the tag", error = ex.Message });
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using UserService.API.Domain.Contracts;
 using UserService.API.Domain.Entities;
 
 namespace UserService.API.Infrastructure.Configurations
@@ -17,7 +18,7 @@ namespace UserService.API.Infrastructure.Configurations
                     Id = "f3a8ec7c-ab34-4c89-a71b-fcbf9283f8e1",
                     UserName = "clifford",
                     Email = "seeduser@example.com",
-                    Role = "Backend developer",
+                    Role = UserRole.Admin,
                     ProfilePicture = "https://randomuser.me/api/portraits/men/1.jpg"
                 }
             );

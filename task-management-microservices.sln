@@ -7,13 +7,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{05B1D0B1-727
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway.API", "src\Gateway.API\Gateway.API.csproj", "{DE2651C8-2757-4206-A415-EA6B6877E566}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService.API", "src\UserService.API\UserService.API.csproj", "{62C1B56E-A4FC-49A3-B76B-A0FE69042131}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService.API", "src\UserService.API\UserService.API.csproj", "{62C1B56E-A4FC-49A3-B76B-A0FE69042131}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskService.API", "src\TaskService.API\TaskService.API.csproj", "{1AE632E8-7D31-499C-B95B-971C9B04EA66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskService.API", "src\TaskService.API\TaskService.API.csproj", "{1AE632E8-7D31-499C-B95B-971C9B04EA66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectService.API", "src\ProjectService.API\ProjectService.API.csproj", "{643495BB-D9A9-464D-A134-A9CB41408262}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectService.API", "src\ProjectService.API\ProjectService.API.csproj", "{643495BB-D9A9-464D-A134-A9CB41408262}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "task-management-microservices.AppHost", "src\task-management-microservices.AppHost\task-management-microservices.AppHost.csproj", "{3843E250-911D-4833-AD06-748604D85DCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "task-management-microservices.AppHost", "src\task-management-microservices.AppHost\task-management-microservices.AppHost.csproj", "{3843E250-911D-4833-AD06-748604D85DCE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "task-management-microservices.ServiceDefaults", "src\task-management-microservices.ServiceDefaults\task-management-microservices.ServiceDefaults.csproj", "{9691C31C-DB9C-43E4-8B3A-232395CD6A63}"
 EndProject

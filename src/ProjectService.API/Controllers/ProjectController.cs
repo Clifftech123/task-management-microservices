@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ProjectService.API.Domain.Entities;
 using ProjectService.API.Services;
 using static ProjectService.API.Domain.Contracts.ProjectDtos;
 
@@ -11,67 +10,95 @@ namespace ProjectService.API.Controllers
     {
         private readonly IProjectServices _projectServices;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectController"/> class.
-        /// </summary>
-        /// <param name="projectServices">The project services.</param>
         public ProjectController(IProjectServices projectServices)
         {
             _projectServices = projectServices;
         }
 
-        /// <summary>
-        /// Gets the list of projects.
-        /// </summary>
-        /// <returns>A list of <see cref="ProjectResponse"/>.</returns>
         [HttpGet("all")]
-        public async Task<IEnumerable<ProjectResponse>> GetProjectsAsync()
+        public async Task<IActionResult> GetProjectsAsync()
         {
-            return await _projectServices.GetProjectsAsync();
+            try
+            {
+                var projects = await _projectServices.GetProjectsAsync();
+                if (projects == null || !projects.Any())
+                {
+                    return NotFound(new { message = "No projects found" });
+                }
+                return Ok(new { message = "Projects successfully fetched", projects });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching projects", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Gets the project by identifier.
-        /// </summary>
-        /// <param name="id">The project identifier.</param>
-        /// <returns>A <see cref="ProjectResponse"/>.</returns>
         [HttpGet("{id}")]
-        public async Task<ProjectResponse> GetProjectByIdAsync(int id)
+        public async Task<IActionResult> GetProjectByIdAsync(int id)
         {
-            return await _projectServices.GetProjectByIdAsync(id);
+            try
+            {
+                var project = await _projectServices.GetProjectByIdAsync(id);
+                if (project == null)
+                {
+                    return NotFound(new { message = "Project not found" });
+                }
+                return Ok(new { message = "Project successfully fetched", project });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching the project", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Creates a new project.
-        /// </summary>
-        /// <param name="createProjectRequest">The create project request.</param>
-        /// <returns>The created <see cref="Project"/>.</returns>
         [HttpPost("create")]
-        public async Task<Project> CreateProjectAsync(CreateProjectRequest createProjectRequest)
+        public async Task<IActionResult> CreateProjectAsync(CreateProjectRequest createProjectRequest)
         {
-            return await _projectServices.CreateProjectAsync(createProjectRequest);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var project = await _projectServices.CreateProjectAsync(createProjectRequest);
+                return Ok(new { message = "Project created successfully", project });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the project", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Updates an existing project.
-        /// </summary>
-        /// <param name="updateProjectRequest">The update project request.</param>
-        /// <returns>The updated <see cref="UpdateProjectRequest"/>.</returns>
         [HttpPut("update")]
-        public async Task<UpdateProjectRequest> UpdateProjectAsync(UpdateProjectRequest updateProjectRequest)
+        public async Task<IActionResult> UpdateProjectAsync(int id, UpdateProjectRequest updateProjectRequest)
         {
-            return await _projectServices.UpdateProjectAsync(updateProjectRequest);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                var project = await _projectServices.UpdateProjectAsync(id, updateProjectRequest);
+                return Ok(new { message = "Project updated successfully", project });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the project", error = ex.Message });
+            }
         }
 
-        /// <summary>
-        /// Deletes the project by identifier.
-        /// </summary>
-        /// <param name="id">The project identifier.</param>
-        /// <returns>A <see cref="ProjectResponse"/>.</returns>
         [HttpDelete("delete/{id}")]
-        public async Task<ProjectResponse> DeleteProjectAsync(int id)
+        public async Task<IActionResult> DeleteProjectAsync(int id)
         {
-            return await _projectServices.DeleteProjectAsync(id);
+            try
+            {
+                var project = await _projectServices.DeleteProjectAsync(id);
+                return Ok(new { message = "Project deleted successfully", project });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the project", error = ex.Message });
+            }
         }
     }
 }

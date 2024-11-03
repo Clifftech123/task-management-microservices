@@ -1,0 +1,144 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+
+@Gatway_HostAddress = https://localhost:7023
+
+### =================   PROJECT ENDPOINTS ==========
+
+GET {{Gatway_HostAddress}}/api/projects/all
+Accept: application/json
+
+### Second endpoint Get project by id
+
+GET {{Gatway_HostAddress}}/api/projects/2
+Accept: application/json
+
+### Get Current user in the project service
+
+GET {{Gatway_HostAddress}}/api/projects/current
+Accept: application/json
+
+### Third endpoint Create project
+
+POST {{Gatway_HostAddress}}/api/projects/create
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "string",
+  "description": "string",
+  "endDate": "2024-11-02T23:04:06.307Z",
+  "startDate": "2024-11-02T23:04:06.307Z",
+  "userId": "string",
+  "tags": [
+    "string"
+  ]
+}
+
+### Fourth endpoint Update project
+
+PUT {{Gatway_HostAddress}}/api/projects/update?id=2
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "string",
+  "description": "string",
+  "endDate": "2024-11-02T23:04:06.307Z",
+  "startDate": "2024-11-02T23:04:06.307Z",
+  "userId": "string",
+  "tags": [
+    "string"
+  ]
+}
+
+### Fifth endpoint Delete project
+
+DELETE {{Gatway_HostAddress}}/api/projects/delete/2
+Accept: application/json
+
+##### --- Tags endpoint in the project -------- 
+
+### Get all tags
+
+GET {{Gatway_HostAddress}}/api/projects/tags
+Accept: application/json
+
+
+### Get tag by id
+
+GET {{Gatway_HostAddress}}/api/projects/tags/3
+Accept: application/json
+
+### Create tag
+POST {{Gatway_HostAddress}}/api/projects/tags
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "dotent"
+}
+
+### Update tag 
+
+PUT {{Gatway_HostAddress}}/api/projects/tags/3
+Accept: application/json
+Content-Type: application/json
+
+{
+  "name": "change"
+}
+
+
+### Delete tag
+DELETE {{Gatway_HostAddress}}/api/projects/tags/2
+Accept: application/json
+
+
+
+
+### ============== END OF THE PROJECT ENDPOINTS ==============
+
+### USER ENDPOINTS 
+
+### Login user
+
+POST {{Gatway_HostAddress}}/api/users/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "opokuisaiaclifford@gmail.com",
+  "password": "clifford123"
+}
+
+### Register user
+
+POST {{Gatway_HostAddress}}/api/users/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "opokuisaiaclifford@gmail.com",
+  "userName": "Isaiahcliffford",
+  "password": "clifford123"
+  
+}
+
+### Get current user
+
+GET {{Gatway_HostAddress}}/api/users/current
+Accept: application/json
+
+### Update user
+
+PUT {{Gatway_HostAddress}}/api/users/update
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "string",
+  "userName": "string",
+  "role": "string",
+  "password": "string",
+  "profilePicture": "string"
+}

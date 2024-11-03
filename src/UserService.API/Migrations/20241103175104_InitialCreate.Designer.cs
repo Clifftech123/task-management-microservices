@@ -12,7 +12,7 @@ using UserService.API.Infrastructure.Context;
 namespace UserService.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241024092801_InitialCreate")]
+    [Migration("20241103175104_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -170,6 +170,9 @@ namespace UserService.API.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -204,18 +207,24 @@ namespace UserService.API.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RefreshTokenExpiryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Role")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -238,15 +247,18 @@ namespace UserService.API.Migrations
                         {
                             Id = "f3a8ec7c-ab34-4c89-a71b-fcbf9283f8e1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ee58cc75-e6fa-416b-b0b3-17f9a0fd4864",
+                            ConcurrencyStamp = "74150f6b-5076-4b6a-aeee-c0c670143386",
+                            CreatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "seeduser@example.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
                             ProfilePicture = "https://randomuser.me/api/portraits/men/1.jpg",
-                            Role = "Backend developer",
-                            SecurityStamp = "bd412b74-0140-42c9-8e2f-9751a2087685",
+                            RefreshTokenExpiryTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Role = 0,
+                            SecurityStamp = "45084ef7-1ee2-404f-acef-3efa44446383",
                             TwoFactorEnabled = false,
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserName = "clifford"
                         });
                 });

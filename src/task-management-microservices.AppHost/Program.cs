@@ -19,6 +19,7 @@ var taskServiceApi = builder.AddProject<Projects.TaskService_API>("taskservice-a
     .WithReference(rabbitMq)
     .WithReference(redis)
     .WithReference(seq);
+    
 
 var userServiceApi = builder.AddProject<Projects.UserService_API>("userservice-api")
 
