@@ -9,7 +9,11 @@ namespace UserService.API.Services
         /// </summary>
         /// <param name="registerRequest"></param>
         /// <returns></returns>
-        Task<UserResponse> RegisterAsync(UserRegisterRequest registerRequest);
+        Task<UserResponse> RegisterUserAsync(UserRegisterRequest registerRequest, string role);
+
+        Task<UserResponse> RegisterAdminUserAsync(UserRegisterRequest registerRequest);
+
+        Task<UserResponse> RegisterNormalUserAsync(UserRegisterRequest registerRequest);
 
         /// <summary>
         ///  Method to login a user
@@ -24,13 +28,13 @@ namespace UserService.API.Services
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<UserResponse> DeleteUserAsync(int userId);
+        Task<UserResponse> DeleteUserAsync();
 
         /// <summary>
         ///  Method to get all Users
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<UserResponse>> GetAllUser();
+        Task<IEnumerable<GetAllUserReponse>> GetAllUser();
 
         /// <summary>
         ///  Get current user

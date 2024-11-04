@@ -1,6 +1,8 @@
 # For more info on HTTP files go to https://aka.ms/vs/httpfile
 
 @Gatway_HostAddress = https://localhost:7023
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiIwNWNkNjAxYy1hZjJiLTQyNWItYjJmYS01YmZlZjk3ODk2YWIiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJvcG9rdWlzYWlhY2xpZmZvcmRhbWluQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Im9wb2t1aXNhaWFjbGlmZm9yZGFtaW5AZ21haWwuY29tIiwiZXhwIjoxNzMwNzQ4MjExLCJpc3MiOiJSZWFsV29yZEFQSSIsImF1ZCI6Imh0dHBzOi8vbG9jYWxob3N0OjUwNTIifQ.M6QewqRJO7VPfFcp88OMrhg2TFkcqfHpxVw_ISe90SI
+
 
 ### =================   PROJECT ENDPOINTS ==========
 
@@ -9,13 +11,15 @@ Accept: application/json
 
 ### Second endpoint Get project by id
 
-GET {{Gatway_HostAddress}}/api/projects/2
+GET {{Gatway_HostAddress}}/api/projects/3
 Accept: application/json
+Authorization: Bearer {{AccessToken}}
 
 ### Get Current user in the project service
 
 GET {{Gatway_HostAddress}}/api/projects/current
 Accept: application/json
+Authorization: Bearer {{AccessToken}}
 
 ### Third endpoint Create project
 
@@ -36,9 +40,10 @@ Content-Type: application/json
 
 ### Fourth endpoint Update project
 
-PUT {{Gatway_HostAddress}}/api/projects/update?id=2
+PUT {{Gatway_HostAddress}}/api/projects/update?id=3
 Accept: application/json
 Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
 
 {
   "name": "string",
@@ -55,6 +60,7 @@ Content-Type: application/json
 
 DELETE {{Gatway_HostAddress}}/api/projects/delete/2
 Accept: application/json
+Authorization: Bearer {{AccessToken}}
 
 ##### --- Tags endpoint in the project -------- 
 
@@ -62,17 +68,19 @@ Accept: application/json
 
 GET {{Gatway_HostAddress}}/api/projects/tags
 Accept: application/json
-
+Authorization: Bearer {{AccessToken}}
 
 ### Get tag by id
 
 GET {{Gatway_HostAddress}}/api/projects/tags/3
 Accept: application/json
+Authorization: Bearer {{AccessToken}}
 
 ### Create tag
 POST {{Gatway_HostAddress}}/api/projects/tags
 Accept: application/json
 Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
 
 {
   "name": "dotent"
@@ -83,24 +91,40 @@ Content-Type: application/json
 PUT {{Gatway_HostAddress}}/api/projects/tags/3
 Accept: application/json
 Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
 
 {
   "name": "change"
 }
 
-
 ### Delete tag
 DELETE {{Gatway_HostAddress}}/api/projects/tags/2
 Accept: application/json
-
-
-
+Authorization: Bearer {{AccessToken}}
 
 ### ============== END OF THE PROJECT ENDPOINTS ==============
 
 ### USER ENDPOINTS 
 
-### Login user
+
+### Register user nomal user 
+
+POST {{Gatway_HostAddress}}/api/users/register-normal
+Accept: application/json
+Content-Type: application/json
+   {
+     "FirstName": "Isaiah",
+     "lastName": "Clifford",
+     "Gender": "male",
+     "email": "opokuisaiaclifford@gmail.com",
+     "userName": "Isaiahcliffford",
+     "password": "clifford123"
+   
+  }
+ 
+  
+  
+### Login user normal user 
 
 POST {{Gatway_HostAddress}}/api/users/login
 Accept: application/json
@@ -111,34 +135,63 @@ Content-Type: application/json
   "password": "clifford123"
 }
 
-### Register user
 
-POST {{Gatway_HostAddress}}/api/users/register
+
+
+
+### Register admin user
+
+POST {{Gatway_HostAddress}}/api/users/register-admin
+Accept: application/json
+Content-Type: application/json
+{
+  
+ "firstName": "Isaiah",
+  "lastName": "Clifford",
+  "Gender": "male",
+  "email": "opokuisaiacliffordamin@gmail.com",
+  "userName": "Isaiahcliffford",
+  "password": "clifford123"
+ 
+  
+}
+
+### Login Admin user
+
+POST {{Gatway_HostAddress}}/api/users/login
 Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "opokuisaiaclifford@gmail.com",
-  "userName": "Isaiahcliffford",
+   "email": "opokuisaiacliffordamin@gmail.com",
   "password": "clifford123"
-  
 }
+
+
 
 ### Get current user
 
 GET {{Gatway_HostAddress}}/api/users/current
 Accept: application/json
+Authorization: Bearer {{AccessToken}}
 
-### Update user
 
-PUT {{Gatway_HostAddress}}/api/users/update
+### Get all users
+GET {{Gatway_HostAddress}}/api/users/all-users
 Accept: application/json
-Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
 
-{
-  "email": "string",
-  "userName": "string",
-  "role": "string",
-  "password": "string",
-  "profilePicture": "string"
-}
+
+### logout user
+
+POST {{Gatway_HostAddress}}/api/users/logout
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+
+
+### Delete user by ID
+
+DELETE {{Gatway_HostAddress}}/api/users/{userId}
+Accept: application/json
+Authorization: Bearer {{AccessToken}}
+

@@ -14,7 +14,7 @@ namespace UserService.API.Services
     public class UserServiceImple : IUserService
     {
         private readonly ITokenService _tokenService;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<UserServiceImple> _logger;
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
@@ -30,7 +30,7 @@ namespace UserService.API.Services
         /// <param name="logger">The logger.</param>
         /// <param name="context">The application database context.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are null.</exception>
-        public UserServiceImple(ITokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, ICurrentUserService currentUserService, ILogger<UserServiceImple> logger, ApplicationDbContext context)
+        public UserServiceImple(ITokenService tokenService, UserManager<User> userManager, IMapper mapper, ICurrentUserService currentUserService, ILogger<UserServiceImple> logger, ApplicationDbContext context)
         {
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -48,20 +48,24 @@ namespace UserService.API.Services
         /// <exception cref="ArgumentException">Thrown when the registration request is invalid.</exception>
         /// <exception cref="UserAlreadyExistsException">Thrown when a user with the same email already exists.</exception>
         /// <exception cref="InvalidOperationException">Thrown when user registration fails.</exception>
-        public async Task<UserResponse> RegisterAsync(UserRegisterRequest registerRequest)
+        public async Task<UserResponse> RegisterUserAsync(UserRegisterRequest registerRequest, string role)
         {
             _logger.LogInformation("Registering user with email {Email}", registerRequest?.Email);
+
+            // Check if the registration request is null
             if (registerRequest == null)
             {
                 throw new ArgumentException("User registration data is missing.");
             }
 
+            // Check if the password is null or does not contain a number
             if (string.IsNullOrEmpty(registerRequest.Password) || !registerRequest.Password.Any(char.IsDigit))
             {
                 _logger.LogWarning("Password does not contain a number.");
                 throw new ArgumentException("Password must include at least one number.");
             }
 
+            // Check if the email is null and if a user with the same email already exists
             var existingUser = await _userManager.FindByEmailAsync(registerRequest.Email ?? throw new ArgumentException("Email is required."));
             if (existingUser != null)
             {
@@ -69,29 +73,41 @@ namespace UserService.API.Services
                 throw new UserAlreadyExistsException("User already exists.");
             }
 
-            var user = new ApplicationUser
+            // Create a new user object
+            var user = new User
             {
-                UserName = registerRequest.UserName,
+                UserName = registerRequest.Email,
                 Email = registerRequest.Email,
-                Role = Enum.Parse<UserRole>(registerRequest.Role),
+                FirstName = registerRequest.FirstName,
+                LastName = registerRequest.LastName,
+                Gender = registerRequest.Gender,
                 ProfilePicture = "https://api.realworld.io/images/smiley-cyrus.jpeg"
+
+
             };
+
             _logger.LogInformation("Creating user with email {Email}", registerRequest.Email);
 
+            // Attempt to create the user
             var result = await _userManager.CreateAsync(user, registerRequest.Password);
             if (!result.Succeeded)
             {
+                _logger.LogWarning("User registration failed.");
                 var errors = string.Join("; ", result.Errors.Select(e => e.Description));
                 throw new InvalidOperationException($"User registration failed: {errors}");
             }
             _logger.LogInformation("User created with email {Email}", registerRequest.Email);
 
-            await _tokenService.GenerateJwtToken(user);
-            await _userManager.AddToRoleAsync(user, user.Role.ToString());
-            _logger.LogInformation("User added to role {Role}", user.Role);
+            // Assign the role to the user
+            _logger.LogInformation("Assigning role {Role} to user with email {Email}", role, registerRequest.Email);
+            await _userManager.AddToRoleAsync(user, role);
 
+            // Map the user object to a UserResponse object and return it
+            _logger.LogInformation("User registered with email {Email}", registerRequest.Email);
             return _mapper.Map<UserResponse>(user);
         }
+
+
 
         /// <summary>
         /// Logs in a user asynchronously.
@@ -123,18 +139,24 @@ namespace UserService.API.Services
             }
 
             _logger.LogInformation("User with email {Email} successfully logged in.", loginRequest.Email);
-            var token = await _tokenService.GenerateJwtToken(user);
+            var accessToken = await _tokenService.GenerateJwtToken(user);
             var refreshToken = await _tokenService.GenerateRefreshToken();
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
+
             var userResponse = _mapper.Map<UserResponse>(user);
-            userResponse.Token = token;
+            userResponse.AccessToken = accessToken;
             userResponse.RefreshToken = refreshToken;
+
+
+            var roles = await _userManager.GetRolesAsync(user);
+            userResponse.Role = roles.FirstOrDefault();
 
             return userResponse;
         }
+
 
         /// <summary>
         /// Gets the current user asynchronously.
@@ -143,73 +165,21 @@ namespace UserService.API.Services
         /// <exception cref="UserNotFoundException">Thrown when the current user is not found.</exception>
         public async Task<CurrentUserResponse> GetCurrentUserAsync()
         {
-            _logger.LogInformation("Getting current user.");
-            var currentUserId = _currentUserService.GetUserId();
-            var user = await _userManager.FindByIdAsync(currentUserId);
-            if (user == null)
+            var userId = _currentUserService.GetUserId();
+            if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogWarning("Current user not found.");
                 throw new UserNotFoundException("User not found.");
             }
 
-            _logger.LogInformation("Current user found.");
-            var token = await _tokenService.GenerateJwtToken(user);
-            var currentUserResponse = _mapper.Map<CurrentUserResponse>(user);
-            currentUserResponse.Token = token;
-            return currentUserResponse;
-        }
-
-        /// <summary>
-        /// Updates the current user asynchronously.
-        /// </summary>
-        /// <param name="updateCurrentUserRequest">The update user request.</param>
-        /// <returns>The updated current user response.</returns>
-        /// <exception cref="UserNotFoundException">Thrown when the current user is not found.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when user update fails.</exception>
-        /// <exception cref="ArgumentException">Thrown when the password is invalid.</exception>
-        public async Task<CurrentUserResponse> UpdateCurrentUserAsync(UpdateUserRequest updateCurrentUserRequest)
-        {
-            _logger.LogInformation("Updating current user.");
-            var currentUserId = _currentUserService.GetUserId();
-            var user = await _userManager.FindByIdAsync(currentUserId);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                _logger.LogWarning("Current user not found.");
+                _logger.LogWarning("User not found in database.");
                 throw new UserNotFoundException("User not found.");
             }
-            _logger.LogInformation("Current user found.");
 
-            _mapper.Map(updateCurrentUserRequest, user);
-
-            var result = await _userManager.UpdateAsync(user);
-            if (!result.Succeeded)
-            {
-                _logger.LogWarning("User update failed.");
-                throw new InvalidOperationException("User update failed.");
-            }
-
-            _logger.LogInformation("User updated.");
-            if (!string.IsNullOrWhiteSpace(updateCurrentUserRequest.Password))
-            {
-                if (!updateCurrentUserRequest.Password.Any(char.IsDigit))
-                {
-                    throw new ArgumentException("Password must include at least one number.");
-                }
-                _logger.LogInformation("Updating password for user with email {Email}", user.Email);
-
-                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var passwordResetResult = await _userManager.ResetPasswordAsync(user, resetToken, updateCurrentUserRequest.Password);
-                if (!passwordResetResult.Succeeded)
-                {
-                    _logger.LogWarning("Password reset failed.");
-                    throw new InvalidOperationException("Password reset failed.");
-                }
-            }
-
-            _logger.LogInformation("User updated.");
-            var userResponse = _mapper.Map<CurrentUserResponse>(user);
-            userResponse.Token = await _tokenService.GenerateJwtToken(user);
-            return userResponse;
+            return _mapper.Map<CurrentUserResponse>(user);
         }
 
         /// <summary>
@@ -240,7 +210,7 @@ namespace UserService.API.Services
             await _userManager.UpdateAsync(user);
 
             var userResponse = _mapper.Map<UserResponse>(user);
-            userResponse.Token = newAccessToken;
+            userResponse.AccessToken = newAccessToken;
             userResponse.RefreshToken = newRefreshToken;
 
             return userResponse;
@@ -279,7 +249,8 @@ namespace UserService.API.Services
         /// </summary>
         /// <returns>A list of user responses.</returns>
         /// <exception cref="UserNotFoundException">Thrown when no users are found.</exception>
-        public async Task<IEnumerable<UserResponse>> GetAllUser()
+
+        public async Task<IEnumerable<GetAllUserReponse>> GetAllUser()
         {
             _logger.LogInformation("Getting all users.");
             var users = await _userManager.Users.ToListAsync();
@@ -288,7 +259,17 @@ namespace UserService.API.Services
                 throw new UserNotFoundException("No users found.");
             }
             _logger.LogInformation("Users found.");
-            return _mapper.Map<IEnumerable<UserResponse>>(users);
+
+            var userResponses = new List<GetAllUserReponse>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var userResponse = _mapper.Map<GetAllUserReponse>(user);
+                userResponse.Role = roles.FirstOrDefault();
+                userResponses.Add(userResponse);
+            }
+
+            return userResponses;
         }
 
         /// <summary>
@@ -297,18 +278,21 @@ namespace UserService.API.Services
         /// <param name="userId">The user ID.</param>
         /// <returns>The deleted user response.</returns>
         /// <exception cref="UserNotFoundException">Thrown when the user is not found.</exception>
-        public async Task<UserResponse> DeleteUserAsync(int userId)
+        public async Task<UserResponse> DeleteUserAsync()
         {
-            _logger.LogInformation("Deleting user with id {UserId}", userId);
-            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId.ToString());
+            _logger.LogInformation("Deleting current user.");
+            var currentUserId = _currentUserService.GetUserId();
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == currentUserId.ToString());
             if (user == null)
             {
                 throw new UserNotFoundException("User not found.");
             }
-            _logger.LogInformation("User found. Deleting user with id {UserId}", userId);
+            _logger.LogInformation("User found. Deleting user with id {UserId}", currentUserId);
             await _userManager.DeleteAsync(user);
             return _mapper.Map<UserResponse>(user);
         }
+
+
 
         /// <summary>
         /// Logs out the current user asynchronously.
@@ -330,5 +314,25 @@ namespace UserService.API.Services
             await _userManager.UpdateAsync(user);
             return _mapper.Map<UserResponse>(user);
         }
+
+        /// <summary>
+        /// Registers a new admin user asynchronously.
+        /// </summary>
+        /// <param name="registerRequest">The user registration request.</param>
+        /// <returns>The registered admin user response.</returns>
+        public async Task<UserResponse> RegisterAdminUserAsync(UserRegisterRequest registerRequest)
+        {
+            return await RegisterUserAsync(registerRequest, "Admin");
+        }
+        /// <summary>
+        /// Registers a new normal user asynchronously.
+        /// </summary>
+        /// <param name="registerRequest">The user registration request.</param>
+        /// <returns>The registered normal user response.</returns>
+        public async Task<UserResponse> RegisterNormalUserAsync(UserRegisterRequest registerRequest)
+        {
+            return await RegisterUserAsync(registerRequest, "User");
+        }
+
     }
 }

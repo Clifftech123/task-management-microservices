@@ -31,21 +31,35 @@ namespace UserService.API.Controllers
         public async Task<IActionResult> LoginAsync([FromBody] LoginUserRequest loginRequest)
         {
             var response = await _userService.LoginAsync(loginRequest);
-            return Ok(response);
+            return Ok(new { message = "User Login Successfully", data = response });
         }
 
         /// <summary>
-        /// Registers a new user.
+        /// Registers a new normal user.
         /// </summary>
         /// <param name="registerRequest">The registration request.</param>
         /// <returns>An <see cref="IActionResult"/> containing the user response.</returns>
-        [HttpPost("register")]
+        [HttpPost("register-normal")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
         [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> RegisterAsync([FromBody] UserRegisterRequest registerRequest)
+        public async Task<IActionResult> RegisterNormalUserAsync([FromBody] UserRegisterRequest registerRequest)
         {
-            var response = await _userService.RegisterAsync(registerRequest);
-            return Ok(response);
+            var response = await _userService.RegisterNormalUserAsync(registerRequest);
+            return Ok(new { message = "Normal User Registered Successfully", data = response });
+        }
+
+        /// <summary>
+        /// Registers a new admin user.
+        /// </summary>
+        /// <param name="registerRequest">The registration request.</param>
+        /// <returns>An <see cref="IActionResult"/> containing the user response.</returns>
+        [HttpPost("register-admin")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
+        [ProducesResponseType(StatusCodes.Status422UnprocessableEntity, Type = typeof(ErrorResponse))]
+        public async Task<IActionResult> RegisterAdminUserAsync([FromBody] UserRegisterRequest registerRequest)
+        {
+            var response = await _userService.RegisterAdminUserAsync(registerRequest);
+            return Ok(new { message = "Admin User Registered Successfully", data = response });
         }
 
         /// <summary>
@@ -59,10 +73,8 @@ namespace UserService.API.Controllers
         public async Task<IActionResult> GetCurrentUserAsync()
         {
             var response = await _userService.GetCurrentUserAsync();
-            return Ok(response);
+            return Ok(new { message = "User Details", data = response });
         }
-
-
 
         /// <summary>
         /// Deletes a user by their ID.
@@ -73,10 +85,10 @@ namespace UserService.API.Controllers
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
-        public async Task<IActionResult> DeleteUserAsync(int userId)
+        public async Task<IActionResult> DeleteUserAsync()
         {
-            var response = await _userService.DeleteUserAsync(userId);
-            return Ok(response);
+            var response = await _userService.DeleteUserAsync();
+            return Ok(new { message = "User Deleted Successfully", data = response });
         }
 
         /// <summary>
@@ -90,7 +102,7 @@ namespace UserService.API.Controllers
         public async Task<IActionResult> GetAllUser()
         {
             var response = await _userService.GetAllUser();
-            return Ok(response);
+            return Ok(new { message = "All Users", data = response });
         }
 
         /// <summary>
@@ -135,7 +147,5 @@ namespace UserService.API.Controllers
             var response = await _userService.RevokeRefreshToken(refreshTokenRemoveRequest);
             return Ok(response);
         }
-
-
     }
 }

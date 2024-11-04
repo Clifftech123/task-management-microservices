@@ -32,6 +32,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<IProjectServices, ProjectServices>();
 builder.Services.AddScoped<ITagsServices, TagServices>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
