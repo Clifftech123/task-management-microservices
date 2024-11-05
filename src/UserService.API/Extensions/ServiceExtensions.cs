@@ -19,14 +19,11 @@ namespace UserService.API.Extensions
         /// <param name="services">The service collection.</param>
         /// <param name="configuration">The configuration.</param>
         /// <exception cref="ArgumentNullException">Thrown when the SQL connection string is not configured.</exception>
-
-
         public static void ConfigureSQLContext(this IServiceCollection services, IConfiguration configuration)
-      =>
-      services.AddDbContext<ApplicationDbContext>(
-          o => o.UseSqlServer(configuration.GetConnectionString("sqlConnection"),
-              b => b.MigrationsAssembly("UserService.API")));
-
+        =>
+        services.AddDbContext<ApplicationDbContext>(
+            o => o.UseSqlServer(configuration.GetConnectionString("sqlConnection"),
+                b => b.MigrationsAssembly("UserService.API")));
 
         /// <summary>
         /// Configures CORS for the application.
@@ -46,7 +43,7 @@ namespace UserService.API.Extensions
         /// <param name="services">The service collection.</param>
         public static void ConfigureIdentity(this IServiceCollection services)
         {
-            var builder = services.AddIdentity<User, Role>(options =>
+            var builder = services.AddIdentity<ApplicationUser, Role>(options =>
             {
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequireDigit = true;
@@ -105,6 +102,19 @@ namespace UserService.API.Extensions
                         return context.Response.WriteAsync(result);
                     },
                 };
+            });
+        }
+
+        /// <summary>
+        /// Configures authorization policies for the application.
+        /// </summary>
+        /// <param name="services">The service collection.</param>
+        public static void ConfigureAuthorizationPolicies(this IServiceCollection services)
+        {
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy =>
+                    policy.RequireRole("admin"));
             });
         }
     }

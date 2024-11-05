@@ -8,7 +8,7 @@ namespace UserService.API.Infrastructure.Context
     /// <summary>
     /// Application database context.
     /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
@@ -21,7 +21,7 @@ namespace UserService.API.Infrastructure.Context
         /// <summary>
         /// Gets or sets the users.
         /// </summary>
-        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<ApplicationUser> ApplicationUser { get; set; } = null!;
 
         /// <summary>
         /// Gets or sets the roles.

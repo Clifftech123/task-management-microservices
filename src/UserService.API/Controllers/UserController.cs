@@ -95,8 +95,10 @@ namespace UserService.API.Controllers
         /// Gets all users.
         /// </summary>
         /// <returns>An <see cref="IActionResult"/> containing a list of user responses.</returns>
+        /// <returns>An <see cref="IActionResult"/> containing a list of user responses.</returns>
+        /// 
+        [Authorize(Policy = "AdminPolicy")]
         [HttpGet("all-users")]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<UserResponse>))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
         public async Task<IActionResult> GetAllUser()

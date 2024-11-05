@@ -14,7 +14,7 @@ namespace UserService.API.Services
     public class UserServiceImple : IUserService
     {
         private readonly ITokenService _tokenService;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<UserServiceImple> _logger;
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
@@ -30,7 +30,7 @@ namespace UserService.API.Services
         /// <param name="logger">The logger.</param>
         /// <param name="context">The application database context.</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the parameters are null.</exception>
-        public UserServiceImple(ITokenService tokenService, UserManager<User> userManager, IMapper mapper, ICurrentUserService currentUserService, ILogger<UserServiceImple> logger, ApplicationDbContext context)
+        public UserServiceImple(ITokenService tokenService, UserManager<ApplicationUser> userManager, IMapper mapper, ICurrentUserService currentUserService, ILogger<UserServiceImple> logger, ApplicationDbContext context)
         {
             _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -74,7 +74,7 @@ namespace UserService.API.Services
             }
 
             // Create a new user object
-            var user = new User
+            var user = new ApplicationUser
             {
                 UserName = registerRequest.Email,
                 Email = registerRequest.Email,
@@ -179,8 +179,13 @@ namespace UserService.API.Services
                 throw new UserNotFoundException("User not found.");
             }
 
-            return _mapper.Map<CurrentUserResponse>(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var userResponse = _mapper.Map<CurrentUserResponse>(user);
+            userResponse.Role = roles.FirstOrDefault();
+
+            return userResponse;
         }
+
 
         /// <summary>
         /// Refreshes the token asynchronously.

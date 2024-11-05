@@ -8,7 +8,7 @@ namespace TaskService.API.Services
         Task<TaskEntities> GetTaskAsync(int taskId);
         Task<TaskResponseRequest> CreateTaskAsync(CreateTaskRequest taskRequest);
         Task<TaskResponseRequest> UpdateTaskAsync(TaskResponseRequest taskRequest);
-        Task<TaskResponseRequest> DeleteTaskAsync(int taskId);
+        Task<bool> DeleteTaskAsync(int taskId);
         Task<IEnumerable<TaskEntities>> GetTasksAsync();
     }
 }

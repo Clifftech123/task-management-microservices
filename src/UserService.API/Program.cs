@@ -8,11 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 
-
+// Add services to the container.
 builder.Services.ConfigureSQLContext(builder.Configuration);
 builder.Services.ConfigureCORS();
 builder.Services.ConfigureIdentity();
 builder.Services.ConfigureJWT(builder.Configuration);
+builder.Services.ConfigureAuthorizationPolicies();
 
 builder.AddSeqEndpoint("seq");
 builder.AddServiceDefaults();
@@ -24,7 +25,6 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IUserService, UserServiceImple>();
 builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
-
 
 builder.Services.AddExceptionHandler<UserAlradyExitExceptionHandler>();
 builder.Services.AddExceptionHandler<UserNotFoundExceptionHandler>();
@@ -84,6 +84,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseExceptionHandler();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

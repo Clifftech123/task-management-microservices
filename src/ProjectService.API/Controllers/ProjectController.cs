@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProjectService.API.Domain.Entities;
 using ProjectService.API.Services;
 using static ProjectService.API.Domain.Contracts.ProjectDtos;
 
@@ -18,19 +19,15 @@ namespace ProjectService.API.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetProjectsAsync()
         {
-            try
+
+            var projects = await _projectServices.GetProjectsAsync();
+            if (projects == null || !projects.Any())
             {
-                var projects = await _projectServices.GetProjectsAsync();
-                if (projects == null || !projects.Any())
-                {
-                    return NotFound(new { message = "No projects found" });
-                }
-                return Ok(new { message = "Projects successfully fetched", projects });
+                return Ok(new { message = "No projects found", projects = new List<Project>() });
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "An error occurred while fetching projects", error = ex.Message });
-            }
+            return Ok(projects);
+
+
         }
 
         [HttpGet("{id}")]

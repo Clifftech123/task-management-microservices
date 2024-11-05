@@ -24,8 +24,4 @@
     <ProjectReference Include="..\task-management-microservices.ServiceDefaults\task-management-microservices.ServiceDefaults.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

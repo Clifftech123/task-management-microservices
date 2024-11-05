@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
 namespace UserService.API.Domain.Entities
 {
-    public class User : IdentityUser
+    /// <summary>
+    ///  Application User 
+    /// </summary>
+    public class ApplicationUser : IdentityUser
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

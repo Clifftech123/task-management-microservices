@@ -82,11 +82,12 @@ namespace ProjectService.API.Services
             var projects = await _projectDbContext.Projects.AsNoTracking().ToListAsync();
             if (projects.Count == 0)
             {
-                _logger.LogError("No projects found");
-                throw new KeyNotFoundException("No projects found");
+                _logger.LogInformation("No projects found");
+                return Enumerable.Empty<ProjectResponse>();
             }
             return _mapper.Map<IEnumerable<ProjectResponse>>(projects);
         }
+
 
         /// <summary>
         /// Updates a project asynchronously.

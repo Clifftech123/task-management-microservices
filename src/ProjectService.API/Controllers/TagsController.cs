@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.Latency;
 using ProjectService.API.Services;
 using static ProjectService.API.Domain.Contracts.TagesDtos;
 
@@ -21,11 +22,13 @@ namespace ProjectService.API.Controllers
             try
             {
                 var response = await _tagService.GetTagsAsync();
+
                 if (response == null || !response.Any())
                 {
-                    return NotFound(new { message = "No tags found" });
+                    return Ok(new { message = "No tags found", tags = new List<Tag>() });
                 }
-                return Ok(new { message = "Tags   successfully feted  ", response });
+
+                return Ok(new { message = "Tags successfully fetched", tags = response });
             }
             catch (Exception ex)
             {
@@ -47,7 +50,7 @@ namespace ProjectService.API.Controllers
                 {
                     return NotFound(new { message = "Tag not found" });
                 }
-                return Ok(new { message = "Tags   successfully feted  ", response });
+                return Ok(new { message = "Tags successfully fetched", response });
             }
             catch (Exception ex)
             {

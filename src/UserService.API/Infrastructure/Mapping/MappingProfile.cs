@@ -6,7 +6,7 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<User, UserResponse>()
+        CreateMap<ApplicationUser, UserResponse>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture))
@@ -18,7 +18,7 @@ public class MappingProfile : Profile
 
             .ReverseMap();
 
-        CreateMap<User, CurrentUserResponse>()
+        CreateMap<ApplicationUser, CurrentUserResponse>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture))
@@ -27,7 +27,7 @@ public class MappingProfile : Profile
 
             .ReverseMap();
 
-        CreateMap<User, GetAllUserReponse>();
+        CreateMap<ApplicationUser, GetAllUserReponse>();
 
 
 

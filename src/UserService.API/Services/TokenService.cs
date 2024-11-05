@@ -18,14 +18,14 @@ namespace UserService.API.Services
         private readonly string _validAudience;
         private readonly double _expires;
         private readonly ILogger<TokenService> _logger;
-        private readonly UserManager<User> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenService"/> class.
         /// </summary>
         /// <param name="configuration">The configuration settings.</param>
         /// <param name="logger">The logger instance.</param>
-        public TokenService(UserManager<User> userManager, IConfiguration configuration, ILogger<TokenService> logger)
+        public TokenService(UserManager<ApplicationUser> userManager, IConfiguration configuration, ILogger<TokenService> logger)
         {
             var jwtSettings = configuration.GetSection("JwtSettings");
             var key = jwtSettings["key"] ?? throw new ArgumentNullException(nameof(jwtSettings) + ":key");
@@ -42,23 +42,20 @@ namespace UserService.API.Services
         /// </summary>
         /// <param name="user">The user for whom to generate the token.</param>
         /// <returns>A JWT token as a string.</returns>
-        public async Task<string> GenerateJwtToken(User user)
+        public async Task<string> GenerateJwtToken(ApplicationUser user)
         {
-            if (user == null)
-            {
-                _logger.LogError("GenerateJwtToken: User is null");
-                throw new ArgumentNullException(nameof(user), "User cannot be null");
-            }
+            var claims = await GetClaimsAsync(user);
+            var roles = await userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            _logger.LogInformation("User roles: {Roles}", string.Join(", ", roles));
 
             var signingCredentials = new SigningCredentials(_secretKey, SecurityAlgorithms.HmacSha256);
-            var claims = await GetClaimsAsync(user);
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
 
-            var tokenHandler = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            var role = claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
-            _logger.LogInformation("Token generated for user {UserName} with role {Role}", user.UserName, role);
-            return tokenHandler;
+            return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
         }
+
 
         /// <summary>
         /// Generates a refresh token.
@@ -81,7 +78,7 @@ namespace UserService.API.Services
         /// <param name="user">The user for whom to validate the token.</param>
         /// <param name="refreshToken">The refresh token to validate.</param>
         /// <returns>A boolean indicating whether the token is valid.</returns>
-        public Task<bool> ValidateRefreshToken(User user, string refreshToken)
+        public Task<bool> ValidateRefreshToken(ApplicationUser user, string refreshToken)
         {
             if (user == null)
             {
@@ -103,7 +100,7 @@ namespace UserService.API.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<List<Claim>> GetClaimsAsync(User user)
+        public async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
         {
             if (user == null)
             {
@@ -112,9 +109,9 @@ namespace UserService.API.Services
             }
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Sid, user.Id),
-            };
+       {
+           new Claim(ClaimTypes.Sid, user.Id),
+       };
 
             var roles = await userManager.GetRolesAsync(user);
             foreach (var role in roles)
@@ -124,9 +121,11 @@ namespace UserService.API.Services
 
             claims.Add(new Claim(ClaimTypes.Name, user.UserName));
             claims.Add(new Claim(ClaimTypes.Email, user.Email));
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
 
             return claims;
         }
+
 
         /// <summary>
         /// Generates the token options.
